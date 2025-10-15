@@ -13,37 +13,51 @@ export const getItems = async (req, res) => {
 // Create new item
 export const createItem = async (req, res) => {
   try {
-    const { name, type, parentId, fileType, content, imageUrl } = req.body
+    const { name, type, parentId, fileType, content, imageUrl } = req.body;
 
     // Validate parent exists if parentId is provided
     if (parentId) {
-      const parent = await Item.findById(parentId)
+      const parent = await Item.findById(parentId);
       if (!parent || parent.type !== "folder") {
-        return res.status(400).json({ message: "Invalid parent folder" })
+        return res.status(400).json({ message: "Invalid parent folder" });
       }
     }
 
+    // Check if name is unique for the same type in the same parent folder
+    const existingItem = await Item.findOne({
+      name,
+      type,
+      parentId: parentId || null,
+    });
+    if (existingItem) {
+      return res
+        .status(400)
+        .json({ message: `${type} name must be unique in this folder` });
+    }
+
+    // Prepare item data
     const itemData = {
       name,
       type,
       parentId: parentId || null,
-    }
+    };
 
     if (type === "file") {
-      itemData.fileType = fileType
+      itemData.fileType = fileType;
       if (fileType === "text") {
-        itemData.content = content || ""
+        itemData.content = content || "";
       } else if (fileType === "image") {
-        itemData.imageUrl = imageUrl || ""
+        itemData.imageUrl = imageUrl || "";
       }
     }
 
-    const item = await Item.create(itemData)
-    res.status(201).json(item)
+    // Create item
+    const item = await Item.create(itemData);
+    res.status(201).json(item);
   } catch (error) {
-    res.status(400).json({ message: error.message })
+    res.status(400).json({ message: error.message });
   }
-}
+};
 
 // Rename item
 export const renameItem = async (req, res) => {

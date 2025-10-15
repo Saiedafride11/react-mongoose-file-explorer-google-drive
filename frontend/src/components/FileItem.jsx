@@ -9,7 +9,7 @@ import {
   MoreVertical,
   Trash2,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import {
@@ -23,7 +23,14 @@ export default function FileItem({ item, onPreview }) {
   const [isRenaming, setIsRenaming] = useState(false);
   const [newName, setNewName] = useState(item.name);
   const [deleteItem] = useDeleteItemMutation();
-  const [renameItem] = useRenameItemMutation();
+  const [
+    renameItem,
+    {
+      data: renameResponseData,
+      isSuccess: renameIsSuccess,
+      isError: renameIsError,
+    },
+  ] = useRenameItemMutation();
   const dispatch = useDispatch();
 
   const getIcon = () => {
@@ -74,15 +81,23 @@ export default function FileItem({ item, onPreview }) {
     if (newName.trim() && newName !== item.name) {
       try {
         await renameItem({ id: item._id, name: newName.trim() });
-        toast.success(
-          `Successfully "${item.name}" renamed to "${newName.trim()}"`
-        );
       } catch (error) {
         toast.error("Failed to rename the item");
       }
     }
     setIsRenaming(false);
   };
+
+  // Response success or error
+  useEffect(() => {
+    if (renameIsSuccess) {
+      toast.success(
+        `Successfully "${item.name}" renamed to "${newName.trim()}"`
+      );
+    } else if (!renameResponseData && renameIsError) {
+      toast.error("Item name must be unique in this folder");
+    }
+  }, [renameIsSuccess, renameIsError, renameResponseData]);
 
   return (
     <div className="relative group">

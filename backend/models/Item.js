@@ -1,4 +1,4 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 
 const itemSchema = new mongoose.Schema(
   {
@@ -6,6 +6,7 @@ const itemSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      unique: true,
     },
     type: {
       type: String,
@@ -41,6 +42,7 @@ const itemSchema = new mongoose.Schema(
 // Index for faster queries
 itemSchema.index({ parentId: 1 })
 itemSchema.index({ type: 1 })
+
 
 const Item = mongoose.model("Item", itemSchema)
 

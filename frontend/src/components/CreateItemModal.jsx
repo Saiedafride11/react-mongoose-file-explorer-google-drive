@@ -15,8 +15,15 @@ export default function CreateItemModal({ parentId, onClose }) {
   const [imageUpload, setImageUpload] = useState(uploaderImage);
   const [allowImageUpload, setAllowImageUpload] = useState(true);
 
-  const [createItem, { isSuccess: createIsSuccess, isLoading }] =
-    useCreateItemMutation();
+  const [
+    createItem,
+    {
+      data: createResponseData,
+      isSuccess: createIsSuccess,
+      isLoading,
+      isError: createIsError,
+    },
+  ] = useCreateItemMutation();
 
   // Image file upload
   const handleImageChange = (e) => {
@@ -63,15 +70,18 @@ export default function CreateItemModal({ parentId, onClose }) {
     }
 
     await createItem(itemData);
-    onClose();
+    // onClose();
   };
 
   // Response success or error
   useEffect(() => {
     if (createIsSuccess) {
       toast.success("Item created successfully");
+      onClose();
+    } else if (!createResponseData && createIsError) {
+      toast.error("Item name must be unique in this folder");
     }
-  }, [createIsSuccess]);
+  }, [createIsSuccess, createIsError, createResponseData]);
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
