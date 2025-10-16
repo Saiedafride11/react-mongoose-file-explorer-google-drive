@@ -9,7 +9,7 @@ import {
   MoreVertical,
   Trash2,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import {
@@ -155,7 +155,7 @@ export default function FileItem({ item, onPreview }) {
             className="fixed inset-0 z-10"
             onClick={() => setShowMenu(false)}
           />
-          <div className="absolute right-2 top-12 z-20 bg-white border border-border rounded-lg shadow-lg py-1 min-w-[140px]">
+          <div className="absolute top-5 right-10 z-20 bg-white border border-border rounded-lg shadow-lg py-1 min-w-[140px]">
             <button
               onClick={(e) => {
                 e.stopPropagation();

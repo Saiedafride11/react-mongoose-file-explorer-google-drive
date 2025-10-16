@@ -28,7 +28,7 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="w-64 border-r border-border bg-secondary/30 overflow-y-auto scrollbar-thin">
+    <aside className="w-64 border-r border-border bg-secondary/30 overflow-y-auto scrollbar-thin h-full">
       <div className="p-4">
         <h2 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">
           Folders

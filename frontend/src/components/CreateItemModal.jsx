@@ -158,13 +158,13 @@ export default function CreateItemModal({ parentId, onClose }) {
               </label>
 
               <div className="space-y-3">
-                <div className="flex gap-2">
+                <div className="flex gap-0 sm:gap-2">
                   <div
                     onClick={() => {
                       setImageUrl("");
                       setContentType("text");
                     }}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 cursor-pointer ${
+                    className={`text-[13px] sm:text-[16px] flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 cursor-pointer ${
                       contentType === "text"
                         ? "bg-primary text-white shadow-sm"
                         : "text-gray-600 hover:bg-gray-200"
@@ -178,7 +178,7 @@ export default function CreateItemModal({ parentId, onClose }) {
                       setContentType("image_url");
                       setImageUpload(uploaderImage);
                     }}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 cursor-pointer ${
+                    className={`text-[13px] sm:text-[16px] flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 cursor-pointer ${
                       contentType === "image_url"
                         ? "bg-primary text-white shadow-sm"
                         : "text-gray-600 hover:bg-gray-200"
@@ -192,7 +192,7 @@ export default function CreateItemModal({ parentId, onClose }) {
                       setImageUrl("");
                       setContentType("image_upload");
                     }}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 cursor-pointer ${
+                    className={`text-[13px] sm:text-[16px] flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 cursor-pointer ${
                       contentType === "image_upload"
                         ? "bg-primary text-white shadow-sm"
                         : "text-gray-600 hover:bg-gray-200"
