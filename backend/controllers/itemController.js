@@ -1,14 +1,14 @@
-import Item from "../models/Item.js"
+import Item from "../models/Item.js";
 
 // Get all items
 export const getItems = async (req, res) => {
   try {
-    const items = await Item.find().sort({ type: -1, name: 1 })
-    res.json(items)
+    const items = await Item.find().sort({ type: -1, name: 1 });
+    res.json(items);
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    res.status(500).json({ message: error.message });
   }
-}
+};
 
 // Create new item
 export const createItem = async (req, res) => {
@@ -24,16 +24,16 @@ export const createItem = async (req, res) => {
     }
 
     // Check if name is unique for the same type in the same parent folder
-    const existingItem = await Item.findOne({
-      name,
-      type,
-      parentId: parentId || null,
-    });
-    if (existingItem) {
-      return res
-        .status(400)
-        .json({ message: `${type} name must be unique in this folder` });
-    }
+    // const existingItem = await Item.findOne({
+    //   name,
+    //   type,
+    //   parentId: parentId || null,
+    // });
+    // if (existingItem) {
+    //   return res
+    //     .status(400)
+    //     .json({ message: `${type} name must be unique in this folder` });
+    // }
 
     // Prepare item data
     const itemData = {
@@ -62,69 +62,75 @@ export const createItem = async (req, res) => {
 // Rename item
 export const renameItem = async (req, res) => {
   try {
-    const { id } = req.params
-    const { name } = req.body
+    const { id } = req.params;
+    const { name } = req.body;
 
-    const item = await Item.findByIdAndUpdate(id, { name }, { new: true, runValidators: true })
+    const item = await Item.findByIdAndUpdate(
+      id,
+      { name },
+      { new: true, runValidators: true }
+    );
 
     if (!item) {
-      return res.status(404).json({ message: "Item not found" })
+      return res.status(404).json({ message: "Item not found" });
     }
 
-    res.json(item)
+    res.json(item);
   } catch (error) {
-    res.status(400).json({ message: error.message })
+    res.status(400).json({ message: error.message });
   }
-}
+};
 
 // Update file content
 export const updateContent = async (req, res) => {
   try {
-    const { id } = req.params
-    const { content } = req.body
+    const { id } = req.params;
+    const { content } = req.body;
 
-    const item = await Item.findById(id)
+    const item = await Item.findById(id);
 
     if (!item) {
-      return res.status(404).json({ message: "Item not found" })
+      return res.status(404).json({ message: "Item not found" });
     }
 
     if (item.type !== "file" || item.fileType !== "text") {
-      return res.status(400).json({ message: "Can only update text file content" })
+      return res
+        .status(400)
+        .json({ message: "Can only update text file content" });
     }
 
-    item.content = content
-    await item.save()
+    item.content = content;
+    await item.save();
 
-    res.json(item)
+    res.json(item);
   } catch (error) {
-    res.status(400).json({ message: error.message })
+    res.status(400).json({ message: error.message });
   }
-}
+};
 
 // Delete item and all its children recursively
 export const deleteItem = async (req, res) => {
   try {
-    const { id } = req.params
+    const { id } = req.params;
 
-    const item = await Item.findById(id)
+    const item = await Item.findById(id);
     if (!item) {
-      return res.status(404).json({ message: "Item not found" })
+      return res.status(404).json({ message: "Item not found" });
     }
 
     // Recursive function to delete all children
     const deleteRecursive = async (itemId) => {
-      const children = await Item.find({ parentId: itemId })
+      const children = await Item.find({ parentId: itemId });
       for (const child of children) {
-        await deleteRecursive(child._id)
+        await deleteRecursive(child._id);
       }
-      await Item.findByIdAndDelete(itemId)
-    }
+      await Item.findByIdAndDelete(itemId);
+    };
 
-    await deleteRecursive(id)
+    await deleteRecursive(id);
 
-    res.json({ message: "Item deleted successfully" })
+    res.json({ message: "Item deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    res.status(500).json({ message: error.message });
   }
-}
+};
