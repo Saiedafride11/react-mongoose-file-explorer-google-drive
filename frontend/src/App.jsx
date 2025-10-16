@@ -1,18 +1,32 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import Header from "./components/Header";
 import MainPanel from "./components/MainPanel";
 import Sidebar from "./components/Sidebar";
 import { useGetItemsQuery } from "./store/api/fileApi";
 
+let lastToast;
+
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { refetch } = useGetItemsQuery();
 
+  // items data show
   useEffect(() => {
     refetch();
   }, [refetch]);
+
+  // Automatically dismiss old toasts when new one is added
+  ["success", "error", "loading"].forEach((type) => {
+    const original = toast[type];
+    toast[type] = (...args) => {
+      if (lastToast) toast.dismiss(lastToast);
+      lastToast = original(...args);
+      return lastToast;
+    };
+  });
 
   return (
     <div className="h-screen flex flex-col bg-background">
