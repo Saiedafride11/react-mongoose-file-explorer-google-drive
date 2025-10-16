@@ -3,9 +3,9 @@
 import imageCompression from "browser-image-compression";
 import { FileText, Folder, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import uploaderImage from "../assets/upload-icon.svg";
 import { useCreateItemMutation } from "../store/api/fileApi";
+import { toaster } from "../utils/toaster";
 
 export default function CreateItemModal({ parentId, currentItems, onClose }) {
   const [type, setType] = useState("folder");
@@ -137,7 +137,7 @@ export default function CreateItemModal({ parentId, currentItems, onClose }) {
     );
 
     if (isDuplicateName) {
-      toast.error(
+      toaster.error(
         `${
           type === "folder" ? "Folder" : "File"
         } name already exists in this folder!`
@@ -150,7 +150,7 @@ export default function CreateItemModal({ parentId, currentItems, onClose }) {
   // Response success or error
   useEffect(() => {
     if (createIsSuccess) {
-      toast.success("Item created successfully");
+      toaster.success("Item created successfully");
       onClose();
     }
   }, [createIsSuccess]);

@@ -9,13 +9,7 @@ import { store } from "./store/store";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <Provider store={store}>
-      <Toaster
-        position="top-center"
-        reverseOrder={false}
-        toastOptions={{
-          duration: 1000,
-        }}
-      />
+      <Toaster position="top-center" reverseOrder={false} />
 
       <App />
     </Provider>

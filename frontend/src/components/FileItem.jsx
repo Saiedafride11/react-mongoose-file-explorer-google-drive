@@ -17,6 +17,7 @@ import {
   useRenameItemMutation,
 } from "../store/api/fileApi";
 import { setCurrentFolder } from "../store/slices/explorerSlice";
+import { toaster } from "../utils/toaster";
 
 export default function FileItem({ item, currentItems, onPreview }) {
   const [showMenu, setShowMenu] = useState(false);
@@ -33,6 +34,7 @@ export default function FileItem({ item, currentItems, onPreview }) {
   ] = useRenameItemMutation();
   const dispatch = useDispatch();
 
+  // Folder / file / image icon
   const getIcon = () => {
     if (item.type === "folder")
       return <Folder className="w-8 h-8 text-primary" />;
@@ -49,34 +51,39 @@ export default function FileItem({ item, currentItems, onPreview }) {
     }
   };
 
+  // Item delete
   const handleDelete = () => {
-    toast((t) => (
-      <div className="text-sm">
-        <p className="font-medium">
-          Delete <span className="text-red-600">"{item.name}"</span>?
-        </p>
-        <div className="flex justify-end gap-2 mt-3">
-          <button
-            onClick={() => toast.dismiss(t.id)}
-            className="px-3 py-1 rounded-md border text-gray-600 hover:bg-gray-100"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={async () => {
-              await deleteItem(item._id);
-              toast.dismiss(t.id);
-              toast.success("Deleted successfully!");
-            }}
-            className="px-3 py-1 rounded-md bg-red-600 text-white hover:bg-red-700"
-          >
-            Delete
-          </button>
+    toaster.custom(
+      (t) => (
+        <div className="text-sm">
+          <p className="font-medium">
+            Delete <span className="text-red-600">"{item.name}"</span>?
+          </p>
+          <div className="flex justify-end gap-2 mt-3">
+            <button
+              onClick={() => toast.dismiss(t.id)}
+              className="px-3 py-1 rounded-md border text-gray-600 hover:bg-gray-100"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={async () => {
+                await deleteItem(item._id);
+                toast.dismiss(t.id);
+                toaster.success("Deleted successfully!", 1500);
+              }}
+              className="px-3 py-1 rounded-md bg-red-600 text-white hover:bg-red-700"
+            >
+              Delete
+            </button>
+          </div>
         </div>
-      </div>
-    ));
+      ),
+      5000
+    );
   };
 
+  // Item name edit or rename
   const handleRename = async () => {
     if (newName.trim() && newName !== item.name) {
       try {
@@ -87,7 +94,7 @@ export default function FileItem({ item, currentItems, onPreview }) {
         );
 
         if (isDuplicateName) {
-          toast.error(
+          toaster.error(
             `${
               item.type === "folder" ? "Folder" : "File"
             } name already exists in this folder!`
@@ -96,7 +103,7 @@ export default function FileItem({ item, currentItems, onPreview }) {
           await renameItem({ id: item._id, name: newName.trim() });
         }
       } catch (error) {
-        toast.error("Failed to rename the item");
+        toaster.error("Failed to rename the item");
       }
     }
     setIsRenaming(false);
@@ -105,7 +112,7 @@ export default function FileItem({ item, currentItems, onPreview }) {
   // Response success or error
   useEffect(() => {
     if (renameIsSuccess) {
-      toast.success(
+      toaster.success(
         `Successfully "${item.name}" renamed to "${newName.trim()}"`
       );
     }
