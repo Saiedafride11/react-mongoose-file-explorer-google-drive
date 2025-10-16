@@ -1,5 +1,6 @@
 "use client";
 
+import imageCompression from "browser-image-compression";
 import { FileText, Folder, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -26,21 +27,80 @@ export default function CreateItemModal({ parentId, currentItems, onClose }) {
   ] = useCreateItemMutation();
 
   // Image file upload
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
+  // const handleImageChange = (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     const reader = new FileReader();
 
-      reader.onloadend = () => {
-        const imageDataUrl = reader.result;
-        setImageUpload(imageDataUrl);
+  //     reader.onloadend = () => {
+  //       const imageDataUrl = reader.result;
+  //       setImageUpload(imageDataUrl);
+  //     };
+
+  //     reader.readAsDataURL(file);
+  //   }
+  // };
+
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 800,
+        useWebWorker: true,
       };
 
-      reader.readAsDataURL(file);
+      const compressedFile = await imageCompression(file, options);
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+
+        img.onload = () => {
+          // Create a canvas to resize image
+          const canvas = document.createElement("canvas");
+          const maxWidth = 500;
+          const maxHeight = 500;
+          let width = img.width;
+          let height = img.height;
+
+          // Maintain aspect ratio
+          if (width > height) {
+            if (width > maxWidth) {
+              height *= maxWidth / width;
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width *= maxHeight / height;
+              height = maxHeight;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Convert resized image to Base64 (shorter)
+          const resizedBase64 = canvas.toDataURL(compressedFile.type, 0.7); // 0.7 = 70% quality
+          setImageUpload(resizedBase64);
+        };
+      };
+
+      reader.readAsDataURL(compressedFile);
+    } catch (error) {
+      console.error("Image compression failed:", error);
     }
+
+    setTimeout(() => {
+      e.target.value = "";
+    }, 500);
   };
 
-  // Image upload image remove
   const handleRemoveImage = (i) => {
     setImageUpload(uploaderImage);
     setAllowImageUpload(false);
@@ -246,7 +306,8 @@ export default function CreateItemModal({ parentId, currentItems, onClose }) {
                       <input
                         type="file"
                         name="image"
-                        accept="image/*"
+                        // accept="image/*"
+                        accept=".jpg,.jpeg,.png,.jfif,.webp,.gif"
                         className="hidden"
                         onChange={handleImageChange}
                         disabled={allowImageUpload === true ? false : true}

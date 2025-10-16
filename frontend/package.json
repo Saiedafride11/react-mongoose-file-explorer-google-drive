@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.1",
+    "browser-image-compression": "^2.0.2",
     "clsx": "^2.1.0",
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
