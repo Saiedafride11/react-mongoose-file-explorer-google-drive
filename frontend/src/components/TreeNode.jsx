@@ -2,7 +2,7 @@
 
 import clsx from "clsx";
 import { ChevronDown, ChevronRight, Folder, FolderOpen } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentFolder } from "../store/slices/explorerSlice";
 
@@ -28,6 +28,13 @@ export default function TreeNode({ item, allItems, level }) {
       setIsExpanded(true);
     }
   };
+
+  // When home click, then all menu close
+  useEffect(() => {
+    if (currentFolder === null) {
+      setIsExpanded(false);
+    }
+  }, [currentFolder]);
 
   return (
     <div>
