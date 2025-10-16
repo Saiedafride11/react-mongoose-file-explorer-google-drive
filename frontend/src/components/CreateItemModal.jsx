@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import uploaderImage from "../assets/upload-icon.svg";
 import { useCreateItemMutation } from "../store/api/fileApi";
 
-export default function CreateItemModal({ parentId, onClose }) {
+export default function CreateItemModal({ parentId, currentItems, onClose }) {
   const [type, setType] = useState("folder");
   const [name, setName] = useState("");
   const [content, setContent] = useState("");
@@ -52,6 +52,7 @@ export default function CreateItemModal({ parentId, onClose }) {
   // New folder | file create
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!name.trim()) return;
 
     const itemData = {
@@ -69,8 +70,21 @@ export default function CreateItemModal({ parentId, onClose }) {
       }
     }
 
-    await createItem(itemData);
-    // onClose();
+    const isDuplicateName = currentItems?.some(
+      (data) =>
+        data.type === type &&
+        data.name.trim().toLowerCase() === name.trim().toLowerCase()
+    );
+
+    if (isDuplicateName) {
+      toast.error(
+        `${
+          type === "folder" ? "Folder" : "File"
+        } name already exists in this folder!`
+      );
+    } else {
+      await createItem(itemData);
+    }
   };
 
   // Response success or error
@@ -78,10 +92,8 @@ export default function CreateItemModal({ parentId, onClose }) {
     if (createIsSuccess) {
       toast.success("Item created successfully");
       onClose();
-    } else if (!createResponseData && createIsError) {
-      toast.error("Item name must be unique in this folder");
     }
-  }, [createIsSuccess, createIsError, createResponseData]);
+  }, [createIsSuccess]);
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">

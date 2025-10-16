@@ -5,19 +5,22 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useUpdateContentMutation } from "../store/api/fileApi";
 
-export default function FilePreviewModal({ file, onClose }) {
+export default function FilePreviewModal({ file, setPreviewFile, onClose }) {
   const [content, setContent] = useState(file.content || "");
   const [isEditing, setIsEditing] = useState(false);
   const [updateContent, { isLoading, isSuccess }] = useUpdateContentMutation();
 
   const handleSave = async () => {
     try {
-      await updateContent({ id: file._id, content });
-      toast.success("Successfully content updated");
+      if (content !== file?.content) {
+        await updateContent({ id: file._id, content });
+        toast.success("Content updated successfully");
+      }
     } catch (error) {
       toast.error("Failed to rename the item");
     }
     setIsEditing(false);
+    setPreviewFile({ ...file, content });
   };
 
   return (

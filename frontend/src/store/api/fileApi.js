@@ -2,8 +2,8 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 
 export const fileApi = createApi({
   reducerPath: "fileApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api" }),
-  // baseQuery: fetchBaseQuery({ baseUrl: "https://react-mongoose-file-explorer-backend.vercel.app/api" }),
+  // baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "https://react-mongoose-file-explorer-backend.vercel.app/api" }),
   tagTypes: ["Items"],
   endpoints: (builder) => ({
     getItems: builder.query({

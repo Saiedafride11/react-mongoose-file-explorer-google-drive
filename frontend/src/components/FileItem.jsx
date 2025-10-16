@@ -18,7 +18,7 @@ import {
 } from "../store/api/fileApi";
 import { setCurrentFolder } from "../store/slices/explorerSlice";
 
-export default function FileItem({ item, onPreview }) {
+export default function FileItem({ item, currentItems, onPreview }) {
   const [showMenu, setShowMenu] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);
   const [newName, setNewName] = useState(item.name);
@@ -80,7 +80,21 @@ export default function FileItem({ item, onPreview }) {
   const handleRename = async () => {
     if (newName.trim() && newName !== item.name) {
       try {
-        await renameItem({ id: item._id, name: newName.trim() });
+        const isDuplicateName = currentItems?.some(
+          (data) =>
+            data.type === item.type &&
+            data.name.trim().toLowerCase() === newName.trim().toLowerCase()
+        );
+
+        if (isDuplicateName) {
+          toast.error(
+            `${
+              item.type === "folder" ? "Folder" : "File"
+            } name already exists in this folder!`
+          );
+        } else {
+          await renameItem({ id: item._id, name: newName.trim() });
+        }
       } catch (error) {
         toast.error("Failed to rename the item");
       }
@@ -94,10 +108,8 @@ export default function FileItem({ item, onPreview }) {
       toast.success(
         `Successfully "${item.name}" renamed to "${newName.trim()}"`
       );
-    } else if (!renameResponseData && renameIsError) {
-      toast.error("Item name must be unique in this folder");
     }
-  }, [renameIsSuccess, renameIsError, renameResponseData]);
+  }, [renameIsSuccess]);
 
   return (
     <div className="relative group">
@@ -161,6 +173,7 @@ export default function FileItem({ item, onPreview }) {
                 e.stopPropagation();
                 setIsRenaming(true);
                 setShowMenu(false);
+                setNewName(item.name);
               }}
               className="w-full px-4 py-2 text-sm text-left hover:bg-secondary flex items-center gap-2"
             >

@@ -71,6 +71,7 @@ export default function MainPanel() {
                 <FileItem
                   key={item._id}
                   item={item}
+                  currentItems={currentItems}
                   onPreview={setPreviewFile}
                 />
               ))}
@@ -82,6 +83,7 @@ export default function MainPanel() {
       {showCreateModal && (
         <CreateItemModal
           parentId={currentFolder}
+          currentItems={currentItems}
           onClose={() => setShowCreateModal(false)}
         />
       )}
@@ -89,6 +91,7 @@ export default function MainPanel() {
       {previewFile && (
         <FilePreviewModal
           file={previewFile}
+          setPreviewFile={setPreviewFile}
           onClose={() => setPreviewFile(null)}
         />
       )}
